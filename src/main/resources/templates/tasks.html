@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('My Tasks')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: topbar}"></div>
+
+<main class="page">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">Task management</p>
+            <h1>My Tasks</h1>
+            <p class="muted">Create, prioritize, search, and update your work in one place.</p>
+        </div>
+        <div class="heading-actions">
+            <form th:if="${canUndo}" method="post" th:action="@{/tasks/undo-status}">
+                <button type="submit" class="btn btn-secondary">Undo last status</button>
+            </form>
+            <a class="btn btn-primary" th:href="@{/tasks/new}">+ New Task</a>
+        </div>
+    </section>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <form class="filter-bar" method="get" th:action="@{/tasks}">
+        <label class="grow">
+            Search
+            <input type="search" name="q" th:value="${query}" placeholder="Title, priority, or status">
+        </label>
+        <label>
+            Status
+            <select name="status">
+                <option value="">All statuses</option>
+                <option th:each="item : ${statuses}"
+                        th:value="${item}"
+                        th:text="${item.label}"
+                        th:selected="${selectedStatus == item}"></option>
+            </select>
+        </label>
+        <label>
+            Priority
+            <select name="priority">
+                <option value="">All priorities</option>
+                <option th:each="item : ${priorities}"
+                        th:value="${item}"
+                        th:text="${item.label}"
+                        th:selected="${selectedPriority == item}"></option>
+            </select>
+        </label>
+        <label>
+            Sort by
+            <select name="sort">
+                <option value="importance" th:selected="${selectedSort == 'importance'}">Importance</option>
+                <option value="priority" th:selected="${selectedSort == 'priority'}">Priority</option>
+                <option value="deadline" th:selected="${selectedSort == 'deadline'}">Deadline</option>
+                <option value="created" th:selected="${selectedSort == 'created'}">Creation date</option>
+                <option value="status" th:selected="${selectedSort == 'status'}">Status</option>
+                <option value="title" th:selected="${selectedSort == 'title'}">Title</option>
+            </select>
+        </label>
+        <button type="submit" class="btn btn-secondary">Apply</button>
+        <a class="btn btn-ghost" th:href="@{/tasks}">Reset</a>
+    </form>
+
+    <section class="panel">
+        <div th:if="${taskViews.isEmpty()}" class="empty-state">
+            <h3>No tasks found</h3>
+            <p>Try a different search, or add a task to start organizing deadlines and priorities.</p>
+            <a class="btn btn-primary" th:href="@{/tasks/new}">Create a task</a>
+        </div>
+
+        <div class="task-list" th:unless="${taskViews.isEmpty()}">
+            <a class="task-row" th:each="item : ${taskViews}" th:href="@{/tasks/{id}(id=${item.task.id})}">
+                <span class="priority-dot" th:classappend="${#strings.toLowerCase(item.task.priority)}"></span>
+                <div class="task-main">
+                    <strong th:text="${item.task.title}">Task</strong>
+                    <span class="muted" th:text="${item.task.status.label} + ' · Due ' + ${item.task.deadline}">Due</span>
+                </div>
+                <span class="badge" th:classappend="${#strings.toLowerCase(item.urgency)}"
+                      th:if="${item.urgency.name() != 'NONE'}"
+                      th:text="${item.urgency.label}">Urgent</span>
+                <span class="badge ghost" th:text="${item.task.priority.label}">High</span>
+            </a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

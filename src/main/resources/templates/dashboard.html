@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: topbar}"></div>
+
+<main class="page">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">Overview</p>
+            <h1>Hello, <span th:text="${session.userName}">there</span></h1>
+            <p class="muted">Here is how your work is progressing today.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/tasks/new}">+ New Task</a>
+    </section>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <section class="stats-grid">
+        <article class="stat-card">
+            <span>Total tasks</span>
+            <strong th:text="${stats.totalTasks}">0</strong>
+        </article>
+        <article class="stat-card accent-green">
+            <span>Completed</span>
+            <strong th:text="${stats.completedTasks}">0</strong>
+        </article>
+        <article class="stat-card accent-blue">
+            <span>Pending</span>
+            <strong th:text="${stats.pendingTasks}">0</strong>
+        </article>
+        <article class="stat-card accent-teal">
+            <span>In progress</span>
+            <strong th:text="${stats.inProgressTasks}">0</strong>
+        </article>
+        <article class="stat-card accent-red">
+            <span>Overdue</span>
+            <strong th:text="${stats.overdueTasks}">0</strong>
+        </article>
+        <article class="stat-card accent-orange">
+            <span>High priority</span>
+            <strong th:text="${stats.highPriorityTasks}">0</strong>
+        </article>
+    </section>
+
+    <section class="panel progress-panel">
+        <div class="panel-head">
+            <h2>Completion progress</h2>
+            <strong th:text="${stats.completionPercentage} + '%'">0%</strong>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" th:style="'width:' + ${stats.completionPercentage} + '%'"></div>
+        </div>
+        <p class="muted" th:if="${stats.totalTasks == 0}">Create your first task to start tracking progress.</p>
+        <p class="muted" th:unless="${stats.totalTasks == 0}"
+           th:text="'You have completed ' + ${stats.completedTasks} + ' of ' + ${stats.totalTasks} + ' tasks.'"></p>
+    </section>
+
+    <section class="panel" th:if="${!reminders.isEmpty()}">
+        <h2>Deadline reminders</h2>
+        <div class="reminder-list">
+            <div class="reminder" th:each="reminder : ${reminders}" th:text="${reminder}"></div>
+        </div>
+    </section>
+
+    <section class="panel" th:if="${upcomingDeadlines != null and !upcomingDeadlines.isEmpty()}">
+        <div class="panel-head">
+            <h2>Earliest deadlines</h2>
+            <span class="muted">Priority queue</span>
+        </div>
+        <div class="task-list">
+            <a class="task-row" th:each="item : ${upcomingDeadlines}" th:href="@{/tasks/{id}(id=${item.task.id})}">
+                <span class="priority-dot" th:classappend="${#strings.toLowerCase(item.task.priority)}"></span>
+                <div class="task-main">
+                    <strong th:text="${item.task.title}">Task</strong>
+                    <span class="muted" th:text="'Due ' + ${item.task.deadline}">Due</span>
+                </div>
+                <span class="badge" th:classappend="${#strings.toLowerCase(item.urgency)}"
+                      th:if="${item.urgency.name() != 'NONE'}"
+                      th:text="${item.urgency.label}">Urgent</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <h2>Needs attention</h2>
+            <a class="text-link" th:href="@{/tasks}">View all</a>
+        </div>
+
+        <div th:if="${attentionTasks.isEmpty()}" class="empty-state">
+            <h3>You're all caught up</h3>
+            <p>No pending tasks need attention right now.</p>
+        </div>
+
+        <div class="task-list" th:unless="${attentionTasks.isEmpty()}">
+            <a class="task-row" th:each="item : ${attentionTasks}" th:href="@{/tasks/{id}(id=${item.task.id})}">
+                <span class="priority-dot" th:classappend="${#strings.toLowerCase(item.task.priority)}"></span>
+                <div class="task-main">
+                    <strong th:text="${item.task.title}">Task</strong>
+                    <span class="muted" th:text="'Due ' + ${item.task.deadline}">Due</span>
+                </div>
+                <span class="badge" th:classappend="${#strings.toLowerCase(item.urgency)}" th:text="${item.urgency.label}">Urgent</span>
+                <span class="badge ghost" th:text="${item.task.priority.label}">High</span>
+            </a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

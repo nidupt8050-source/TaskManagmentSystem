@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Task Details')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: topbar}"></div>
+
+<main class="page narrow">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">Task details</p>
+            <h1 th:text="${view.task.title}">Task title</h1>
+            <p class="muted" th:text="'Created ' + ${#temporals.format(view.task.createdAt, 'dd MMM yyyy')}">Created</p>
+        </div>
+        <div class="heading-actions">
+            <form th:if="${canUndo}" method="post" th:action="@{/tasks/undo-status}">
+                <button type="submit" class="btn btn-secondary">Undo last status</button>
+            </form>
+            <a class="btn btn-ghost" th:href="@{/tasks}">Back to tasks</a>
+        </div>
+    </section>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <div th:if="${view.reminder}" class="alert alert-warn" th:text="${view.reminder}"></div>
+
+    <section class="panel">
+        <div class="badge-row">
+            <span class="badge" th:classappend="${#strings.toLowerCase(view.task.priority)}"
+                  th:text="${view.task.priority.label}">High</span>
+            <span class="badge ghost" th:text="${view.task.status.label}">Pending</span>
+            <span class="badge" th:classappend="${#strings.toLowerCase(view.urgency)}"
+                  th:if="${view.urgency.name() != 'NONE'}"
+                  th:text="${view.urgency.label}">Urgent</span>
+        </div>
+
+        <div class="detail-grid">
+            <div>
+                <span class="label">Deadline</span>
+                <strong th:text="${view.task.deadline}">2026-08-20</strong>
+            </div>
+            <div>
+                <span class="label">Completed at</span>
+                <strong th:text="${view.task.completedAt != null ? #temporals.format(view.task.completedAt, 'dd MMM yyyy HH:mm') : 'Not completed yet'}">-</strong>
+            </div>
+        </div>
+
+        <div class="description-box">
+            <span class="label">Description</span>
+            <p th:if="${view.task.description != null and !view.task.description.isEmpty()}"
+               th:text="${view.task.description}">Description</p>
+            <p class="muted" th:if="${view.task.description == null or view.task.description.isEmpty()}">No description added.</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Update status</h2>
+        <form method="post" th:action="@{/tasks/{id}/status(id=${view.task.id})}" class="status-form">
+            <select name="status">
+                <option th:each="item : ${statuses}"
+                        th:value="${item}"
+                        th:text="${item.label}"
+                        th:selected="${view.task.status == item}"></option>
+            </select>
+            <button type="submit" class="btn btn-secondary">Save status</button>
+        </form>
+    </section>
+
+    <section class="panel" th:if="${statusHistory != null and !statusHistory.isEmpty()}">
+        <h2>Status history</h2>
+        <ul class="history-list">
+            <li th:each="change : ${statusHistory}">
+                <strong th:text="${change.previousStatus.label} + ' → ' + ${change.newStatus.label}">Pending → In Progress</strong>
+                <span class="muted" th:text="${#temporals.format(change.changedAt, 'dd MMM yyyy HH:mm')}">date</span>
+            </li>
+        </ul>
+    </section>
+
+    <section class="action-row">
+        <a class="btn btn-primary" th:href="@{/tasks/{id}/edit(id=${view.task.id})}">Edit task</a>
+        <form method="post" th:action="@{/tasks/{id}/delete(id=${view.task.id})}"
+              onsubmit="return confirm('Delete this task? This cannot be undone.');">
+            <button type="submit" class="btn btn-danger">Delete task</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Register')}"></head>
+<body class="auth-body">
+<div class="auth-shell">
+    <section class="auth-hero">
+        <div class="brand brand-light">
+            <span class="brand-mark">ST</span>
+            <span>SmartTask</span>
+        </div>
+        <h1>A calmer way to plan your day.</h1>
+        <p>Register once, then keep every task, deadline, and reminder in one place.</p>
+        <ul class="hero-list">
+            <li>Personal dashboard for your progress</li>
+            <li>High, medium, and low priority levels</li>
+            <li>Status tracking from pending to done</li>
+        </ul>
+    </section>
+
+    <section class="auth-card">
+        <h2>Create your account</h2>
+        <p class="muted">It only takes a minute to get started.</p>
+
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <form method="post" th:action="@{/register}" class="form">
+            <label>
+                Full name
+                <input type="text" name="name" placeholder="Your name" th:value="${name}" required>
+            </label>
+            <label>
+                Email
+                <input type="email" name="email" placeholder="you@example.com" th:value="${email}" required>
+            </label>
+            <label>
+                Password
+                <input type="password" name="password" placeholder="At least 6 characters" minlength="6" required>
+            </label>
+            <label>
+                Confirm password
+                <input type="password" name="confirmPassword" placeholder="Re-enter password" required>
+            </label>
+            <button type="submit" class="btn btn-primary btn-full">Create account</button>
+        </form>
+
+        <p class="switch-auth">Already have an account? <a th:href="@{/login}">Sign in</a></p>
+    </section>
+</div>
+</body>
+</html>
