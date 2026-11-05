@@ -42,14 +42,15 @@ public class AuthController {
     public String login(@RequestParam String email,
                         @RequestParam String password,
                         HttpSession session,
-                        RedirectAttributes redirectAttributes) {
+                        Model model) {
         try {
             User user = authService.login(email, password);
             startSession(session, user);
             return "redirect:/dashboard";
         } catch (IllegalArgumentException ex) {
-            redirectAttributes.addFlashAttribute("error", ex.getMessage());
-            return "redirect:/login";
+            model.addAttribute("error", ex.getMessage());
+            model.addAttribute("email", email);
+            return "login";
         }
     }
 
@@ -114,6 +115,11 @@ public class AuthController {
         session.setAttribute("userName", user.getName());
         session.setAttribute("userEmail", user.getEmail());
         // Load this user's tasks into HashMap / ArrayList / PriorityQueue / BST memory layer.
-        taskService.getUserTasks(user.getId());
+        // Failures here must not block a successful login.
+        try {
+            taskService.getUserTasks(user.getId());
+        } catch (Exception ignored) {
+            // Tasks will load again when the dashboard is opened.
+        }
     }
 }

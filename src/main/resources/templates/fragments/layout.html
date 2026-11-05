@@ -3,7 +3,8 @@
 <head th:fragment="head(pageTitle)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle} + ' | SmartTask'">SmartTask</title>
+    <title th:text="${pageTitle} + ' | Smart Task'">Smart Task</title>
+    <link rel="icon" type="image/png" th:href="@{/images/logo.png}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,9 +12,8 @@
 </head>
 <body>
 <header th:fragment="topbar" class="topbar">
-    <a class="brand" th:href="@{/dashboard}">
-        <span class="brand-mark">ST</span>
-        <span>SmartTask</span>
+    <a class="brand" th:href="@{/dashboard}" aria-label="Smart Task home">
+        <img class="brand-logo" th:src="@{/images/logo-nav.png}" width="24" height="24" alt="Smart Task">
     </a>
 
     <nav class="nav">

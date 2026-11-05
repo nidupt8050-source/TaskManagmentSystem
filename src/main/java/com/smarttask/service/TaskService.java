@@ -1,5 +1,17 @@
 package com.smarttask.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.smarttask.datastructure.TaskAlgorithms;
 import com.smarttask.datastructure.TaskBST;
 import com.smarttask.datastructure.TaskMemoryStore;
@@ -11,17 +23,6 @@ import com.smarttask.model.TaskStatusChange;
 import com.smarttask.model.TaskView;
 import com.smarttask.model.Urgency;
 import com.smarttask.repository.TaskRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
 
 @Service
 public class TaskService {

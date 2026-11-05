@@ -30,11 +30,22 @@ public class AuthService {
     }
 
     public User login(String email, String password) {
-        User user = userRepository.findByEmail(email.trim().toLowerCase())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Please enter your email.");
+        }
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("Please enter your password.");
+        }
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("Invalid email or password.");
+        String cleanEmail = email.trim().toLowerCase();
+        User user = userRepository.findByEmail(cleanEmail)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No account found for \"" + cleanEmail + "\". Please sign up first."));
+
+        String storedHash = user.getPassword();
+        if (storedHash == null || storedHash.isBlank()
+                || !passwordEncoder.matches(password, storedHash)) {
+            throw new IllegalArgumentException("Incorrect password. Please try again.");
         }
 
         return user;

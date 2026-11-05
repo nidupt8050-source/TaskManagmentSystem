@@ -25,7 +25,8 @@ public class User {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
-    @Column(nullable = false, length = 100)
+    // BCrypt hashes are 60 chars; keep extra room for future encoders.
+    @Column(nullable = false, length = 255)
     private String password;
 
     @Column(name = "created_at", nullable = false)

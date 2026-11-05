@@ -5,8 +5,7 @@
 <div class="auth-shell">
     <section class="auth-hero">
         <div class="brand brand-light">
-            <span class="brand-mark">ST</span>
-            <span>SmartTask</span>
+            <img class="brand-logo brand-logo-lg" th:src="@{/images/logo-auth.png}" width="40" height="40" alt="Smart Task">
         </div>
         <h1>Stay on top of every deadline.</h1>
         <p>Create tasks, set priorities, track progress, and get reminders before work slips away.</p>
@@ -23,14 +22,16 @@
 
         <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
-        <form method="post" th:action="@{/login}" class="form">
+        <form method="post" th:action="@{/login}" class="form" autocomplete="on">
             <label>
                 Email
-                <input type="email" name="email" placeholder="you@example.com" required>
+                <input type="email" name="email" placeholder="you@example.com"
+                       th:value="${email}" autocomplete="username" required>
             </label>
             <label>
                 Password
-                <input type="password" name="password" placeholder="Enter your password" required>
+                <input type="password" name="password" placeholder="Enter your password"
+                       autocomplete="current-password" required>
             </label>
             <button type="submit" class="btn btn-primary btn-full">Sign in</button>
         </form>
