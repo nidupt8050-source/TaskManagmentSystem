@@ -11,6 +11,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Stack;
 
@@ -54,6 +56,29 @@ public class TaskMemoryStore {
 
     public synchronized ArrayList<Task> getTasks(Long userId) {
         return new ArrayList<>(tasksByUser.getOrDefault(userId, new ArrayList<>()));
+    }
+
+    /** Counts statuses from this user's HashMap entry, in chart display order. */
+    public synchronized Map<Status, Long> getStatusCounts(Long userId) {
+        Map<Status, Long> counts = new LinkedHashMap<>();
+        for (Status status : Status.values()) {
+            counts.put(status, 0L);
+        }
+        for (Task task : tasksByUser.getOrDefault(userId, new ArrayList<>())) {
+            counts.computeIfPresent(task.getStatus(), (status, count) -> count + 1);
+        }
+        return counts;
+    }
+
+    public synchronized Map<LocalDate, Long> getDeadlineCounts(Long userId, LocalDate start, int days) {
+        Map<LocalDate, Long> counts = new LinkedHashMap<>();
+        for (int day = 0; day < days; day++) {
+            counts.put(start.plusDays(day), 0L);
+        }
+        for (Task task : tasksByUser.getOrDefault(userId, new ArrayList<>())) {
+            counts.computeIfPresent(task.getDeadline(), (date, count) -> count + 1);
+        }
+        return counts;
     }
 
     public synchronized List<Task> getUpcomingByDeadline(Long userId, int limit) {

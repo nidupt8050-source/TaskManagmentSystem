@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,34 @@ public class TaskService {
     public Task getTask(Long taskId, Long userId) {
         return taskRepository.findByIdAndUserId(taskId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found."));
+    }
+
+    public Map<Status, Long> getStatusCounts(Long userId) {
+        return memoryStore.getStatusCounts(userId);
+    }
+
+    public Map<LocalDate, Long> getDeadlineCounts(Long userId) {
+        return memoryStore.getDeadlineCounts(userId,
+                LocalDate.now(java.time.ZoneId.of("Asia/Thimphu")).minusDays(3), 7);
+    }
+
+    public Map<LocalDate, long[]> getOutcomeTimeline(Long userId) {
+        LocalDate today = LocalDate.now(java.time.ZoneId.of("Asia/Thimphu"));
+        Map<LocalDate, long[]> counts = new java.util.LinkedHashMap<>();
+        for (int day = 6; day >= 0; day--) {
+            counts.put(today.minusDays(day), new long[2]);
+        }
+        for (Task task : memoryStore.getTasks(userId)) {
+            if (task.getStatus() == Status.COMPLETED && task.getCompletedAt() != null) {
+                long[] bucket = counts.get(task.getCompletedAt().toLocalDate());
+                if (bucket != null) bucket[0]++;
+            } else if (task.getStatus() != Status.COMPLETED && task.getDeadline() != null
+                    && task.getDeadline().isBefore(today)) {
+                long[] bucket = counts.get(task.getDeadline());
+                if (bucket != null) bucket[1]++;
+            }
+        }
+        return counts;
     }
 
     @Transactional

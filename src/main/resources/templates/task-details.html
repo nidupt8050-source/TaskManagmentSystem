@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{fragments/layout :: head('Task Details')}"></head>
-<body>
+<body class="workspace-page">
 <div th:replace="~{fragments/layout :: topbar}"></div>
 
 <main class="page narrow">
@@ -55,7 +55,7 @@
     <section class="panel">
         <h2>Update status</h2>
         <form method="post" th:action="@{/tasks/{id}/status(id=${view.task.id})}" class="status-form">
-            <select name="status">
+            <select name="status" aria-label="Task status">
                 <option th:each="item : ${statuses}"
                         th:value="${item}"
                         th:text="${item.label}"
