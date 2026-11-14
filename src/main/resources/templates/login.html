@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Login')}"></head>
+<body class="auth-body">
+<div class="auth-shell">
+    <section class="auth-hero">
+        <div class="brand brand-light">
+            <span class="brand-mark">ST</span>
+            <span>SmartTask</span>
+        </div>
+        <h1>Stay on top of every deadline.</h1>
+        <p>Create tasks, set priorities, track progress, and get reminders before work slips away.</p>
+        <ul class="hero-list">
+            <li>Clear priorities for what matters first</li>
+            <li>Live progress on completed work</li>
+            <li>Reminders for upcoming and overdue tasks</li>
+        </ul>
+    </section>
+
+    <section class="auth-card">
+        <h2>Welcome back</h2>
+        <p class="muted">Sign in to manage your tasks.</p>
+
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <form method="post" th:action="@{/login}" class="form">
+            <label>
+                Email
+                <input type="email" name="email" placeholder="you@example.com" required>
+            </label>
+            <label>
+                Password
+                <input type="password" name="password" placeholder="Enter your password" required>
+            </label>
+            <button type="submit" class="btn btn-primary btn-full">Sign in</button>
+        </form>
+
+        <p class="switch-auth">New here? <a th:href="@{/register}">Create an account</a></p>
+    </section>
+</div>
+</body>
+</html>
