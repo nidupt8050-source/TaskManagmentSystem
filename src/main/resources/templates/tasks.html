@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{fragments/layout :: head('My Tasks')}"></head>
-<body>
+<body class="workspace-page">
 <div th:replace="~{fragments/layout :: topbar}"></div>
 
 <main class="page">
@@ -63,6 +63,10 @@
     </form>
 
     <section class="panel">
+        <div class="panel-head">
+            <h2>Your task collection</h2>
+            <span class="collection-count" th:text="${taskViews.size()} + ' tasks shown'">0 tasks shown</span>
+        </div>
         <div th:if="${taskViews.isEmpty()}" class="empty-state">
             <h3>No tasks found</h3>
             <p>Try a different search, or add a task to start organizing deadlines and priorities.</p>

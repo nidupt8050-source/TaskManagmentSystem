@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
-<body>
+<body class="dashboard-page">
 <div th:replace="~{fragments/layout :: topbar}"></div>
 
 <main class="page">
-    <section class="page-heading">
+    <section class="page-heading dashboard-hero">
         <div>
-            <p class="eyebrow">Overview</p>
+            <p class="eyebrow">Your student workspace</p>
             <h1>Hello, <span th:text="${session.userName}">there</span></h1>
-            <p class="muted">Here is how your work is progressing today.</p>
+            <p class="muted">A little focus today. A little closer to your goals.</p>
         </div>
-        <a class="btn btn-primary" th:href="@{/tasks/new}">+ New Task</a>
+        <div class="hero-actions">
+            <a class="btn btn-primary" th:href="@{/tasks/new}">+ Create a task</a>
+            <a class="hero-link" th:href="@{/tasks}">Explore my tasks &#8599;</a>
+        </div>
     </section>
 
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
@@ -44,6 +47,52 @@
         </article>
     </section>
 
+    <div class="analytics-heading"><div><p class="eyebrow">Your progress, at a glance</p><h2>Activity insights</h2></div><span class="insight-tag">Updated on each visit</span></div>
+    <div class="dashboard-charts">
+    <section class="panel chart-panel" aria-labelledby="timeline-title">
+        <div class="panel-head"><h2 id="timeline-title">Task timeline</h2><span class="muted">7 days around today</span></div>
+        <p class="muted">Tasks by deadline date, including completed tasks. Dates use Bhutan time.</p>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" role="img" aria-labelledby="timeline-svg-title" style="display:block;width:100%;height:auto;max-width:900px;margin:24px auto;font-family:inherit">
+            <title id="timeline-svg-title">Task counts by deadline over seven days</title>
+            <line x1="65" y1="235" x2="720" y2="235" stroke="#94a3b8"/>
+            <line x1="65" y1="30" x2="65" y2="235" stroke="#94a3b8"/>
+            <line x1="65" y1="55" x2="720" y2="55" stroke="#dce4ec" stroke-dasharray="4 4"/>
+            <text x="50" y="239" text-anchor="end" fill="#64748b" font-size="14">0</text>
+            <text x="50" y="60" text-anchor="end" fill="#64748b" font-size="14" th:text="${timelineMax}">1</text>
+            <text x="65" y="20" fill="#64748b" font-size="14">Tasks</text>
+            <g th:each="entry, row : ${deadlineCounts}">
+                <rect width="46" rx="5" th:attr="x=${85 + row.index * 90},y=${235 - entry.value * 180.0 / timelineMax},height=${entry.value * 180.0 / timelineMax},fill=${row.index == 3 ? '#168b92' : '#4277d4'}">
+                    <title th:text="${entry.key} + ': ' + ${entry.value} + ' tasks'"></title>
+                </rect>
+                <text text-anchor="middle" fill="#1e293b" font-size="16" font-weight="700" th:attr="x=${108 + row.index * 90},y=${225 - entry.value * 180.0 / timelineMax}" th:text="${entry.value}">0</text>
+                <text y="259" text-anchor="middle" fill="#475569" font-size="13" th:attr="x=${108 + row.index * 90}" th:text="${#temporals.format(entry.key, 'dd MMM')}">14 Nov</text>
+                <text y="280" text-anchor="middle" fill="#168b92" font-size="13" font-weight="700" th:if="${row.index == 3}" th:attr="x=${108 + row.index * 90}">Today</text>
+            </g>
+        </svg>
+        <p class="muted" th:if="${#aggregates.sum(deadlineCounts.values()) == 0}">No tasks have deadlines in these seven days.</p>
+    </section>
+    <section class="panel chart-panel" aria-labelledby="task-chart-title">
+        <div class="panel-head"><h2 id="task-chart-title">Completed and overdue</h2><span class="muted">Last 7 days</span></div>
+        <p class="muted">Completed tasks by completion date. Currently overdue tasks by their missed deadline date. Dates use Bhutan time.</p>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" role="img" aria-labelledby="outcome-line-title outcome-line-desc" style="display:block;width:100%;height:auto;max-width:900px;margin:24px auto;font-family:inherit">
+            <title id="outcome-line-title">Completed and overdue tasks over seven days</title>
+            <desc id="outcome-line-desc">Green solid line: tasks completed on each date. Red dashed line: currently unfinished tasks with a missed deadline on each date. This is not a historical overdue balance.</desc>
+            <g stroke="#dce4ec"><line x1="80" y1="60" x2="680" y2="60" stroke-dasharray="4 4"/><line x1="80" y1="230" x2="680" y2="230"/><line x1="80" y1="40" x2="80" y2="230"/></g>
+            <g fill="#64748b" font-size="14"><text x="80" y="25">Tasks</text><text x="60" y="235" text-anchor="end">0</text><text x="60" y="65" text-anchor="end" th:text="${outcomeMax}">1</text></g>
+            <polyline fill="none" stroke="#278454" stroke-width="3" stroke-linejoin="round" th:attr="points=${completedPoints}"/>
+            <polyline fill="none" stroke="#dc5050" stroke-width="3" stroke-dasharray="7 5" stroke-linejoin="round" th:attr="points=${overduePoints}"/>
+            <g th:each="entry, row : ${outcomeTimeline}">
+                <circle r="6" fill="white" stroke="#278454" stroke-width="3" th:attr="cx=${80 + row.index * 100},cy=${230 - entry.value[0] * 170.0 / outcomeMax}"><title th:text="${entry.key} + ': ' + ${entry.value[0]} + ' completed'"></title></circle>
+                <circle r="3" fill="#dc5050" th:attr="cx=${80 + row.index * 100},cy=${230 - entry.value[1] * 170.0 / outcomeMax}"><title th:text="${entry.key} + ': ' + ${entry.value[1]} + ' overdue'"></title></circle>
+                <text y="258" text-anchor="middle" fill="#475569" font-size="13" th:attr="x=${80 + row.index * 100}" th:text="${#temporals.format(entry.key, 'dd MMM')}"></text>
+            </g>
+            <line x1="180" y1="300" x2="215" y2="300" stroke="#278454" stroke-width="3"/><text x="225" y="305" fill="#334155" font-size="15">Completed</text>
+            <line x1="410" y1="300" x2="445" y2="300" stroke="#dc5050" stroke-width="3" stroke-dasharray="7 5"/><text x="455" y="305" fill="#334155" font-size="15">Overdue</text>
+        </svg>
+        <details><summary class="text-link">View daily counts</summary><table style="width:100%;text-align:left;margin-top:12px"><thead><tr><th scope="col">Date</th><th scope="col">Completed</th><th scope="col">Overdue</th></tr></thead><tbody><tr th:each="entry : ${outcomeTimeline}"><th scope="row" th:text="${entry.key}"></th><td th:text="${entry.value[0]}"></td><td th:text="${entry.value[1]}"></td></tr></tbody></table></details>
+        <p class="muted">Older deadlines and completions are outside this seven-day view. Tasks without a recorded completion date are excluded from the completed line.</p>
+    </section>
+    </div>
     <section class="panel progress-panel">
         <div class="panel-head">
             <h2>Completion progress</h2>
