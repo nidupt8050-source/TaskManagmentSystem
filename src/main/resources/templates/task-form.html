@@ -7,9 +7,9 @@
 <main class="page narrow">
     <section class="page-heading">
         <div>
-            <p class="eyebrow">Task</p>
+            <p class="eyebrow">Make a note of it</p>
             <h1 th:text="${pageTitle}">Create Task</h1>
-            <p class="muted">Set a title, priority, status, and deadline.</p>
+            <p class="muted">Give it a name, add the details, and choose a due date.</p>
         </div>
         <a class="btn btn-ghost" th:href="@{/tasks}">Back to tasks</a>
     </section>
@@ -28,7 +28,7 @@
             <label>
                 Description
                 <textarea name="description" rows="5" maxlength="1000"
-                          placeholder="What needs to be done?"
+                          placeholder="Add a few details to help you get started..."
                           th:text="${task.description}"></textarea>
             </label>
 
@@ -61,7 +61,7 @@
             </label>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary" th:text="${submitLabel}">Save Task</button>
+                <button type="submit" class="btn btn-primary" th:text="${submitLabel}">Save task</button>
                 <a class="btn btn-ghost" th:href="@{/tasks}">Cancel</a>
             </div>
         </form>

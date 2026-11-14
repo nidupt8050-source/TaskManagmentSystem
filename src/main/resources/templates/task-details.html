@@ -7,7 +7,7 @@
 <main class="page narrow">
     <section class="page-heading">
         <div>
-            <p class="eyebrow">Task details</p>
+            <p class="eyebrow">A closer look</p>
             <h1 th:text="${view.task.title}">Task title</h1>
             <p class="muted" th:text="'Created ' + ${#temporals.format(view.task.createdAt, 'dd MMM yyyy')}">Created</p>
         </div>
@@ -53,7 +53,7 @@
     </section>
 
     <section class="panel">
-        <h2>Update status</h2>
+        <h2>Where are you with this?</h2>
         <form method="post" th:action="@{/tasks/{id}/status(id=${view.task.id})}" class="status-form">
             <select name="status">
                 <option th:each="item : ${statuses}"
@@ -61,7 +61,7 @@
                         th:text="${item.label}"
                         th:selected="${view.task.status == item}"></option>
             </select>
-            <button type="submit" class="btn btn-secondary">Save status</button>
+            <button type="submit" class="btn btn-secondary">Update status</button>
         </form>
     </section>
 

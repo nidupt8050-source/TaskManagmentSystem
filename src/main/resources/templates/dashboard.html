@@ -7,13 +7,12 @@
 <main class="page">
     <section class="page-heading hero-strip">
         <div class="hero-copy">
-            <p class="eyebrow">Overview</p>
-            <h1>Hello, <span th:text="${session.userName}">there</span></h1>
-            <p class="muted">Here is how your work is progressing today.</p>
+            <p class="eyebrow">Your day, at a glance</p>
+            <h1>Good to see you, <span th:text="${session.userName}">there</span>.</h1>
+            <p class="muted">A little progress adds up. Here's what's on your plate.</p>
         </div>
         <div class="hero-actions">
-            <span class="hero-pill">Focus mode</span>
-            <a class="btn btn-primary" th:href="@{/tasks/new}">+ New Task</a>
+            <a class="btn btn-primary" th:href="@{/tasks/new}">Add a task</a>
         </div>
     </section>
 
@@ -49,7 +48,7 @@
 
     <section class="panel progress-panel">
         <div class="panel-head">
-            <h2>Completion progress</h2>
+            <h2>Look how far you've come</h2>
             <strong th:text="${stats.completionPercentage} + '%'">0%</strong>
         </div>
         <div class="progress-track">
@@ -69,8 +68,8 @@
 
     <section class="panel" th:if="${upcomingDeadlines != null and !upcomingDeadlines.isEmpty()}">
         <div class="panel-head">
-            <h2>Earliest deadlines</h2>
-            <span class="muted">Priority queue</span>
+            <h2>Coming up next</h2>
+            <span class="muted">Your nearest deadlines</span>
         </div>
         <div class="task-list">
             <a class="task-row" th:each="item : ${upcomingDeadlines}" th:href="@{/tasks/{id}(id=${item.task.id})}">
@@ -88,13 +87,13 @@
 
     <section class="panel">
         <div class="panel-head">
-            <h2>Needs attention</h2>
-            <a class="text-link" th:href="@{/tasks}">View all</a>
+            <h2>On your mind</h2>
+            <a class="text-link" th:href="@{/tasks}">See all tasks</a>
         </div>
 
         <div th:if="${attentionTasks.isEmpty()}" class="empty-state">
-            <h3>You're all caught up</h3>
-            <p>No pending tasks need attention right now.</p>
+            <h3>Nothing urgent right now</h3>
+            <p>Take a breath. You can add something whenever you're ready.</p>
         </div>
 
         <div class="task-list" th:unless="${attentionTasks.isEmpty()}">

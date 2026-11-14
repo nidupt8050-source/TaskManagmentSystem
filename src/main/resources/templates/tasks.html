@@ -7,17 +7,16 @@
 <main class="page">
     <section class="page-heading hero-strip">
         <div class="hero-copy">
-            <p class="eyebrow">Task management</p>
+            <p class="eyebrow">Your list</p>
             <h1>My Tasks</h1>
-            <p class="muted">Create, prioritize, search, and update your work in one place.</p>
+            <p class="muted">Everything you're working on, gathered in one place.</p>
         </div>
         <div class="hero-actions">
-            <span class="hero-pill">Task board</span>
             <div class="heading-actions">
                 <form th:if="${canUndo}" method="post" th:action="@{/tasks/undo-status}">
                     <button type="submit" class="btn btn-secondary">Undo last status</button>
                 </form>
-                <a class="btn btn-primary" th:href="@{/tasks/new}">+ New Task</a>
+                <a class="btn btn-primary" th:href="@{/tasks/new}">Add a task</a>
             </div>
         </div>
     </section>
@@ -68,8 +67,8 @@
     <section class="panel">
         <div th:if="${taskViews.isEmpty()}" class="empty-state">
             <h3>No tasks found</h3>
-            <p>Try a different search, or add a task to start organizing deadlines and priorities.</p>
-            <a class="btn btn-primary" th:href="@{/tasks/new}">Create a task</a>
+            <p>Try changing your filters, or add a task when something comes up.</p>
+            <a class="btn btn-primary" th:href="@{/tasks/new}">Add a task</a>
         </div>
 
         <div class="task-list" th:unless="${taskViews.isEmpty()}">
