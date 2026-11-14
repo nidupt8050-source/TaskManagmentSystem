@@ -15,6 +15,10 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
+    public String encodePassword(String password) {
+        return passwordEncoder.encode(password);
+    }
+
     public User register(String name, String email, String password) {
         String cleanEmail = email.trim().toLowerCase();
 
