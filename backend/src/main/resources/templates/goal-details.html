@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Goal Details')}"></head>
+<body class="workspace-page">
+<div th:replace="~{fragments/layout :: topbar}"></div>
+
+<main class="page narrow">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">Goal details</p>
+            <h1 th:text="${goal.title}">Goal</h1>
+            <p class="muted" th:text="${goal.deadline != null ? 'Deadline ' + goal.deadline : 'No deadline set'}">Deadline</p>
+        </div>
+        <a class="btn btn-ghost" th:href="@{/aims/{id}(id=${goal.aimId})}">Back to aim</a>
+    </section>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <section class="panel">
+        <div class="description-box">
+            <span class="label">Description</span>
+            <p th:if="${goal.description != null and !goal.description.isEmpty()}" th:text="${goal.description}">Description</p>
+            <p class="muted" th:if="${goal.description == null or goal.description.isEmpty()}">No description added.</p>
+        </div>
+        <div class="panel-head" style="margin-top:18px;">
+            <h2>Goal progress</h2>
+            <strong th:text="${goal.progressPercent} + '%'">0%</strong>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" th:style="'width:' + ${goal.progressPercent} + '%'"></div>
+        </div>
+        <p class="muted">Average of objective progress under this goal.</p>
+    </section>
+
+    <section class="panel">
+        <h2>Objectives</h2>
+        <div th:if="${!objectives.isEmpty()}">
+            <div class="panel" th:each="objective : ${objectives}" style="box-shadow:none; margin-bottom:12px;">
+                <div class="badge-row">
+                    <strong th:text="${objective.title}">Objective</strong>
+                    <span class="badge" th:classappend="${#strings.toLowerCase(objective.status)}"
+                          th:text="${objective.status.label}">Active</span>
+                    <span class="badge ghost" th:text="${objective.progressPercent} + '%'">0%</span>
+                </div>
+                <p class="muted" th:if="${objective.deadline != null}" th:text="'Due ' + ${objective.deadline}">Due</p>
+                <p th:if="${objective.description != null and !objective.description.isEmpty()}"
+                   th:text="${objective.description}">Description</p>
+
+                <form method="post" th:action="@{/objectives/{id}/status(id=${objective.id})}" class="status-form">
+                    <input type="hidden" name="goalId" th:value="${goal.id}">
+                    <select name="status">
+                        <option th:each="item : ${objectiveStatuses}"
+                                th:value="${item}"
+                                th:text="${item.label}"
+                                th:selected="${objective.status == item}"></option>
+                    </select>
+                    <button type="submit" class="btn btn-secondary">Save status</button>
+                </form>
+
+                <form method="post" th:action="@{/objectives/{id}/delete(id=${objective.id})}" style="margin-top:10px;">
+                    <input type="hidden" name="goalId" th:value="${goal.id}">
+                    <button class="btn btn-danger" type="submit">Delete objective</button>
+                </form>
+            </div>
+        </div>
+        <p class="muted" th:if="${objectives.isEmpty()}">No objectives yet. Add one below, then link tasks to them.</p>
+        <p class="muted">Mark an objective as <strong>Completed</strong> to set it to 100% and raise Goal + Aim progress.</p>
+    </section>
+
+    <section class="panel">
+        <div class="form-intro">
+            <span class="section-number">02</span>
+            <div>
+                <h2>Add an objective</h2>
+                <p class="muted">Objectives can be set Active, In Progress, or Completed.</p>
+            </div>
+        </div>
+        <form method="post" th:action="@{/goals/{id}/objectives(id=${goal.id})}" class="form">
+            <label>Title <input type="text" name="title" required></label>
+            <label>Description <textarea name="description" rows="3"></textarea></label>
+            <div class="form-grid">
+                <label>
+                    Status
+                    <select name="status">
+                        <option th:each="item : ${objectiveStatuses}"
+                                th:value="${item}"
+                                th:text="${item.label}"
+                                th:selected="${item.name() == 'ACTIVE'}"></option>
+                    </select>
+                </label>
+                <label>Deadline <input type="date" name="deadline"></label>
+            </div>
+            <button class="btn btn-secondary" type="submit">Add Objective</button>
+        </form>
+    </section>
+
+    <section class="action-row">
+        <form method="post" th:action="@{/goals/{id}/delete(id=${goal.id})}"
+              onsubmit="return confirm('Delete this goal and its objectives?');">
+            <input type="hidden" name="aimId" th:value="${goal.aimId}">
+            <button class="btn btn-danger" type="submit">Delete goal</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

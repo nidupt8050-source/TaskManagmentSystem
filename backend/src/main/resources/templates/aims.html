@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('My Aims')}"></head>
+<body class="workspace-page">
+<div th:replace="~{fragments/layout :: topbar}"></div>
+
+<main class="page">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">Aim management</p>
+            <h1>My Aims</h1>
+            <p class="muted">Progress comes from objectives under each aim’s goals.</p>
+        </div>
+        <div class="heading-actions">
+            <a class="btn btn-primary" th:href="@{/aims/new}">+ New Aim</a>
+        </div>
+    </section>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <section class="panel progress-panel">
+        <div class="panel-head">
+            <h2>Overall aim progress</h2>
+            <strong th:text="${overallProgress} + '%'">0%</strong>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" th:style="'width:' + ${overallProgress} + '%'"></div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div th:if="${aims.isEmpty()}" class="empty-state">
+            <h3>No aims yet</h3>
+            <p>Add an aim, then goals and objectives. Completing objectives raises aim progress.</p>
+            <a class="btn btn-primary" th:href="@{/aims/new}">Create an aim</a>
+        </div>
+
+        <div class="task-list" th:unless="${aims.isEmpty()}">
+            <a class="task-row" th:each="aim : ${aims}" th:href="@{/aims/{id}(id=${aim.id})}">
+                <div class="task-main">
+                    <strong th:text="${aim.title}">Aim</strong>
+                    <span class="muted" th:if="${aim.deadline != null}" th:text="'Due ' + ${aim.deadline}">Due</span>
+                    <span class="muted" th:if="${aim.deadline == null}">No deadline</span>
+                </div>
+                <span class="badge ghost" th:text="${aim.progressPercent} + '%'">0%</span>
+            </a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

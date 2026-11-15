@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body class="workspace-page">
+<div th:replace="~{fragments/layout :: topbar}"></div>
+
+<main class="page narrow">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">Aim</p>
+            <h1 th:text="${pageTitle}">Create Aim</h1>
+            <p class="muted">Set a clear aim and optional deadline.</p>
+        </div>
+        <a class="btn btn-ghost" th:href="@{/aims}">Back to aims</a>
+    </section>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <section class="panel">
+        <div class="form-intro">
+            <span class="section-number">01</span>
+            <div>
+                <h2>Define your aim</h2>
+                <p class="muted">Aims sit above goals, objectives, and tasks.</p>
+            </div>
+        </div>
+        <form method="post" th:action="${formAction}" class="form">
+            <label>
+                Title
+                <input type="text" name="title" maxlength="200" required
+                       placeholder="e.g. Improve Academic Performance"
+                       th:value="${aim.title}">
+            </label>
+            <label>
+                Description
+                <textarea name="description" rows="5" maxlength="1000"
+                          placeholder="Why this aim matters"
+                          th:text="${aim.description}"></textarea>
+            </label>
+            <label>
+                Deadline (optional)
+                <input type="date" name="deadline" th:value="${aim.deadline}">
+            </label>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" th:text="${submitLabel}">Save Aim</button>
+                <a class="btn btn-ghost" th:href="@{/aims}">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body class="workspace-page">
+<div th:replace="~{fragments/layout :: topbar}"></div>
+
+<main class="page narrow">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">Task</p>
+            <h1 th:text="${pageTitle}">Create Task</h1>
+            <p class="muted">Set a title, priority, status, and deadline.</p>
+        </div>
+        <a class="btn btn-ghost" th:href="@{/tasks}">Back to tasks</a>
+    </section>
+
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <section class="panel">
+        <div class="form-intro"><span class="section-number">01</span><div><h2>Make a plan</h2><p class="muted">Give your task a clear goal and a little room in your schedule.</p></div></div>
+        <form method="post" th:action="${formAction}" class="form">
+            <label>
+                Title
+                <input type="text" name="title" maxlength="150" required
+                       placeholder="e.g. Submit project report"
+                       th:value="${task.title}">
+            </label>
+
+            <label>
+                Description
+                <textarea name="description" rows="5" maxlength="1000"
+                          placeholder="What needs to be done?"
+                          th:text="${task.description}"></textarea>
+            </label>
+
+            <div class="form-grid">
+                <label>
+                    Priority
+                    <select name="priority" required>
+                        <option th:each="item : ${priorities}"
+                                th:value="${item}"
+                                th:text="${item.label}"
+                                th:selected="${task.priority == item}"></option>
+                    </select>
+                </label>
+
+                <label>
+                    Status
+                    <select name="status" required>
+                        <option th:each="item : ${statuses}"
+                                th:value="${item}"
+                                th:text="${item.label}"
+                                th:selected="${task.status == item}"></option>
+                    </select>
+                </label>
+            </div>
+
+            <label>
+                Deadline
+                <input type="date" name="deadline" required
+                       th:value="${task.deadline}">
+            </label>
+
+            <label>
+                Link to objective (optional)
+                <select name="objectiveId">
+                    <option value="">No linked objective</option>
+                    <option th:each="objective : ${objectives}"
+                            th:value="${objective.id}"
+                            th:text="${objective.title}"
+                            th:selected="${task.objectiveId != null and task.objectiveId == objective.id}"></option>
+                </select>
+            </label>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" th:text="${submitLabel}">Save Task</button>
+                <a class="btn btn-ghost" th:href="@{/tasks}">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Productivity Reports')}"></head>
+<body class="workspace-page reports-page">
+<div th:replace="~{fragments/layout :: topbar}"></div>
+
+<main class="page">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">Reflection &amp; demos</p>
+            <h1>Productivity Reports</h1>
+            <p class="muted">Weekly and monthly charts for completed vs overdue work, priorities, and aim/goal progress.</p>
+        </div>
+        <div class="range-toggle" role="group" aria-label="Report range">
+            <a class="btn"
+               th:classappend="${selectedRange == 'week'} ? ' btn-primary' : ' btn-ghost'"
+               th:href="@{/reports(range='week')}">Weekly</a>
+            <a class="btn"
+               th:classappend="${selectedRange == 'month'} ? ' btn-primary' : ' btn-ghost'"
+               th:href="@{/reports(range='month')}">Monthly</a>
+        </div>
+    </section>
+
+    <section class="stats-grid report-stats">
+        <article class="stat-card accent-green">
+            <span>Completed in range</span>
+            <strong th:text="${report.totalCompleted}">0</strong>
+        </article>
+        <article class="stat-card accent-red">
+            <span>Overdue in range</span>
+            <strong th:text="${report.totalOverdue}">0</strong>
+        </article>
+        <article class="stat-card accent-teal">
+            <span>Completion rate</span>
+            <strong th:text="${report.completionRate} + '%'">0%</strong>
+        </article>
+        <article class="stat-card accent-blue">
+            <span>View</span>
+            <strong class="stat-text" th:text="${report.rangeLabel}">Last 7 days</strong>
+        </article>
+    </section>
+
+    <section class="dashboard-charts">
+        <article class="panel chart-panel">
+            <div class="panel-head">
+                <h2>Completed vs overdue</h2>
+                <span class="muted" th:text="${report.rangeLabel}">Range</span>
+            </div>
+            <p class="muted">Completed tasks by finish date versus deadlines that were missed in the same period.</p>
+
+            <div class="report-legend">
+                <span><i class="swatch completed"></i> Completed</span>
+                <span><i class="swatch overdue"></i> Overdue</span>
+            </div>
+
+            <div class="report-bars" th:if="${!report.timeline.isEmpty()}">
+                <div class="report-bar-group" th:each="bucket : ${report.timeline}">
+                    <div class="report-bar-pair" aria-hidden="true">
+                        <div class="report-bar completed"
+                             th:style="'height:' + ${bucket.completedHeight} + '%'"
+                             th:title="${bucket.completed} + ' completed'"></div>
+                        <div class="report-bar overdue"
+                             th:style="'height:' + ${bucket.overdueHeight} + '%'"
+                             th:title="${bucket.overdue} + ' overdue'"></div>
+                    </div>
+                    <div class="report-bar-values">
+                        <span th:text="${bucket.completed}">0</span>
+                        <span th:text="${bucket.overdue}">0</span>
+                    </div>
+                    <span class="report-bar-label" th:text="${bucket.label}">Mon</span>
+                </div>
+            </div>
+            <p class="muted" th:if="${report.timeline.isEmpty()}">No timeline data yet.</p>
+        </article>
+
+        <article class="panel chart-panel">
+            <div class="panel-head">
+                <h2>Priority breakdown</h2>
+                <span class="muted">All tasks</span>
+            </div>
+            <p class="muted">Share of High, Medium, and Low priority tasks across your collection.</p>
+
+            <div class="priority-donut-wrap">
+                <div class="priority-donut"
+                     th:style="'background:' + ${report.priorityGradient}"
+                     role="img"
+                     aria-label="Priority distribution donut chart"></div>
+                <div class="priority-donut-center">
+                    <strong th:text="${report.totalTasks}">0</strong>
+                    <span>tasks</span>
+                </div>
+            </div>
+
+            <div class="priority-legend">
+                <div class="priority-legend-row" th:each="slice : ${report.priorityBreakdown}">
+                    <span class="priority-dot-label">
+                        <i class="swatch" th:classappend="${slice.key}"></i>
+                        <strong th:text="${slice.label}">High</strong>
+                    </span>
+                    <span class="muted" th:text="${slice.count} + ' · ' + ${slice.percent} + '%'">0 · 0%</span>
+                    <div class="status-chart-track">
+                        <div class="status-chart-bar" th:classappend="${slice.key}"
+                             th:style="'width:' + ${slice.percent} + '%'"></div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="dashboard-charts">
+        <article class="panel chart-panel">
+            <div class="panel-head">
+                <h2>Aim completion trends</h2>
+                <span class="muted">Rolled-up progress</span>
+            </div>
+            <p class="muted">How far each aim has moved, based on objectives under its goals.</p>
+
+            <div th:if="${report.aimTrends.isEmpty()}" class="empty-state compact">
+                <h3>No aims yet</h3>
+                <p>Create an aim to see completion trends here.</p>
+                <a class="btn btn-primary" th:href="@{/aims/new}">New Aim</a>
+            </div>
+
+            <div class="trend-list" th:unless="${report.aimTrends.isEmpty()}">
+                <div class="trend-row" th:each="item : ${report.aimTrends}">
+                    <div class="trend-copy">
+                        <strong th:text="${item.title}">Aim</strong>
+                        <span class="muted" th:text="${item.subtitle}">Due</span>
+                    </div>
+                    <div class="trend-meter">
+                        <div class="progress-track">
+                            <div class="progress-fill" th:style="'width:' + ${item.progressPercent} + '%'"></div>
+                        </div>
+                        <span th:text="${item.progressPercent} + '%'">0%</span>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="panel chart-panel">
+            <div class="panel-head">
+                <h2>Goal completion trends</h2>
+                <span class="muted">Across all aims</span>
+            </div>
+            <p class="muted">Goal progress sorted highest first — useful for viva walkthroughs.</p>
+
+            <div th:if="${report.goalTrends.isEmpty()}" class="empty-state compact">
+                <h3>No goals yet</h3>
+                <p>Add goals under an aim to track this chart.</p>
+                <a class="btn btn-ghost" th:href="@{/aims}">Open Aims</a>
+            </div>
+
+            <div class="trend-list" th:unless="${report.goalTrends.isEmpty()}">
+                <div class="trend-row" th:each="item : ${report.goalTrends}">
+                    <div class="trend-copy">
+                        <strong th:text="${item.title}">Goal</strong>
+                        <span class="muted" th:text="${item.subtitle}">Aim</span>
+                    </div>
+                    <div class="trend-meter">
+                        <div class="progress-track">
+                            <div class="progress-fill" th:style="'width:' + ${item.progressPercent} + '%'"></div>
+                        </div>
+                        <span th:text="${item.progressPercent} + '%'">0%</span>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Aim Details')}"></head>
+<body class="workspace-page">
+<div th:replace="~{fragments/layout :: topbar}"></div>
+
+<main class="page narrow">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">Aim details</p>
+            <h1 th:text="${aim.title}">Aim</h1>
+            <p class="muted" th:text="${aim.deadline != null ? 'Deadline ' + aim.deadline : 'No deadline set'}">Deadline</p>
+        </div>
+        <div class="heading-actions">
+            <a class="btn btn-ghost" th:href="@{/aims}">Back to aims</a>
+        </div>
+    </section>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <section class="panel">
+        <div class="badge-row">
+            <span class="badge ghost" th:text="${aim.progressPercent} + '% complete'">0%</span>
+        </div>
+        <div class="description-box">
+            <span class="label">Description</span>
+            <p th:if="${aim.description != null and !aim.description.isEmpty()}" th:text="${aim.description}">Description</p>
+            <p class="muted" th:if="${aim.description == null or aim.description.isEmpty()}">No description added.</p>
+        </div>
+        <div class="panel-head" style="margin-top:18px;">
+            <h2>Progress from objectives</h2>
+            <strong th:text="${aim.progressPercent} + '%'">0%</strong>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" th:style="'width:' + ${aim.progressPercent} + '%'"></div>
+        </div>
+        <p class="muted">When you mark objectives as Completed, this aim progress updates automatically.</p>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head"><h2>Goals</h2></div>
+        <div class="task-list" th:if="${!goals.isEmpty()}">
+            <a class="task-row" th:each="goal : ${goals}" th:href="@{/goals/{id}(id=${goal.id})}">
+                <div class="task-main">
+                    <strong th:text="${goal.title}">Goal</strong>
+                    <span class="muted" th:text="${goal.deadline != null ? 'Due ' + goal.deadline : 'No deadline'}">Due</span>
+                </div>
+                <span class="badge ghost" th:text="${goal.progressPercent} + '%'">0%</span>
+            </a>
+        </div>
+        <p class="muted" th:if="${goals.isEmpty()}">No goals yet. Add one below.</p>
+    </section>
+
+    <section class="panel">
+        <div class="form-intro">
+            <span class="section-number">02</span>
+            <div>
+                <h2>Add a goal</h2>
+                <p class="muted">Break this aim into smaller goals.</p>
+            </div>
+        </div>
+        <form method="post" th:action="@{/aims/{id}/goals(id=${aim.id})}" class="form">
+            <label>Title <input type="text" name="title" required placeholder="e.g. Score well in CSA201"></label>
+            <label>Description <textarea name="description" rows="3"></textarea></label>
+            <label>Deadline <input type="date" name="deadline"></label>
+            <button class="btn btn-secondary" type="submit">Add Goal</button>
+        </form>
+    </section>
+
+    <section class="action-row">
+        <a class="btn btn-primary" th:href="@{/aims/{id}/edit(id=${aim.id})}">Edit aim</a>
+        <form method="post" th:action="@{/aims/{id}/delete(id=${aim.id})}"
+              onsubmit="return confirm('Delete this aim and all nested goals/objectives?');">
+            <button type="submit" class="btn btn-danger">Delete aim</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>
